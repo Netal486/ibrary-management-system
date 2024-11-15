@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -33,26 +32,27 @@ public class BookController {
     }
 
     @PostMapping("/createbook")
-    public ResponseEntity<Book> createBook(@Valid @RequestBody Book book) {
+    public ResponseEntity<String> createBook(@Valid @RequestBody Book book) {
         logger.info("Creating Book request: {}", book);
-        return new ResponseEntity<>(bookService.createBook(book), HttpStatus.CREATED);
-    }
+        bookService.createBook(book);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Created successfully");    }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Book> updateBook(@PathVariable Long id, @Valid @RequestBody Book book) {
+    public ResponseEntity<String> updateBook(@PathVariable Long id, @Valid @RequestBody Book book) {
         if (!bookService.getBookById(id).isPresent()) {
             return ResponseEntity.notFound().build();
         }
-        return new ResponseEntity<>(bookService.updateBook(id, book),HttpStatus.OK);
+        bookService.updateBook(id, book);
+        return ResponseEntity.ok("Updated successfully");
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteBook(@PathVariable Long id) {
+    public ResponseEntity<String> deleteBook(@PathVariable Long id) {
         if (!bookService.getBookById(id).isPresent()) {
             return ResponseEntity.notFound().build();
         }
         bookService.deleteBook(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok("Deleted successfully");
     }
 }
 
